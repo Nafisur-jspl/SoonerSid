@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import pymongo
-import config
+#import config
 
 import requests
 from flask import Flask, request
