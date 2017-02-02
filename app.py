@@ -11,7 +11,7 @@ from pymongo import MongoClient
 app = Flask(__name__)
 
 # Mongo DB initialization
-client = MongoClient(config["database"]["MONGO_URL"])
+client = MongoClient(os.environ["DB_ACCESS"])
 db = config["database"]["MONGO_DATABASE"];
 table = config["database"]["MONGO_TABLE"];
 
