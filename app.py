@@ -2,20 +2,14 @@ import os
 import sys
 import json
 import pymongo
-#import config
-
 import requests
 from flask import Flask, request
-from pymongo import MongoClient
+from ConnectionEstablisher import ConnectionEstablisher
 
 app = Flask(__name__)
+connection = ConnectionEstablisher()
 
-# Mongo DB initialization
-client = MongoClient(os.environ["DB_ACCESS"])
-#db = config["database"]["MONGO_DATABASE"];
-#table = config["database"]["MONGO_TABLE"];
-
-@app.route('/', methods=['GET'])
+    @app.route('/', methods=['GET'])
 def verify():
     # when the endpoint is registered as a webhook, it must echo back
     # the 'hub.challenge' value it receives in the query arguments
@@ -25,7 +19,7 @@ def verify():
         return request.args["hub.challenge"], 200
 
     return "Hello world", 200
-
+    
 
 @app.route('/', methods=['POST'])
 def webhook():
@@ -46,9 +40,10 @@ def webhook():
                     sender_id = messaging_event["sender"]["id"]        # the facebook ID of the person sending you the message
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
-
+                    response_json = connection.api_connect(message_text)
+                    send_text = response_json['result']['fulfillment']['speech']
                     send_message(sender_id, "got it, thanks!")
-                    send_message(sender_id, messaging_event.get("message").get("text"))
+                    send_message(sender_id, send_text)
                     
                     if record_exists(sender_id) == False:
                         client.heroku_swknz2mg.userinfo.insert_one({"user_id":sender_id})
