@@ -41,7 +41,9 @@ def webhook():
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
                     response_json = connection.api_connect(message_text)
+                    log(response_json)
                     send_text = response_json['result']['fulfillment']['speech']
+                    log(send_text)
                     send_message(sender_id, "got it, thanks!")
                     send_message(sender_id, send_text)
                     
