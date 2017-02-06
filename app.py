@@ -46,10 +46,7 @@ def webhook():
                     log(send_text)
                     send_message(sender_id, "got it, thanks!")
                     send_message(sender_id, send_text)
-                    
-                    if record_exists(sender_id) == False:
-                        client.heroku_swknz2mg.userinfo.insert_one({"user_id":sender_id})
-                        
+                  
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
 
@@ -60,11 +57,6 @@ def webhook():
                     pass
 
     return "ok", 200
-
-def record_exists(sender_id):
-    if client.heroku_swknz2mg.userinfo.find_one({"user_id":sender_id}) != None:
-        return True
-    return False
 
 def send_message(recipient_id, message_text):
 
