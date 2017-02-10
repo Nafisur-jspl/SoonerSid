@@ -50,7 +50,8 @@ def webhook():
                     send_message(sender_id, "got it, thanks!")  # To make sure the application is running
                     send_message(sender_id, send_text)
 
-                    # Inserting the user into the db
+                    # Inserting the user into the db after check
+                    # Adding a Comment to check git integration
                     if connection.dbrecord_exists(user_id = sender_id) is False:
                         log(connection.dbrecord_insert(user_id=sender_id))
                   

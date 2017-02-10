@@ -37,7 +37,7 @@ class MongoConnector(object):
                 print(err)
 
     # Update is sufficient and findAndModify not considered because of a single thread access
-
+    # Git integration working ?
     def update(self, DB, TABLE, user_id, **kwargs):
         if self.record_exists(DB, TABLE, **kwargs) is None:
             raise ElementDoesntExist("Element not present in the db")
