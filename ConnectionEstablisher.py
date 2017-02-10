@@ -2,33 +2,38 @@
 # and MongoConnector and fetches the existing environment variables
 # and sets them yp for connection
 
+import json
 import os
 import uuid
-import json
+
 from ApiConnector import ApiConnector
+from MongoConnector import MongoConnector
 
 
 class ConnectionEstablisher(object):
 
     # Defining the local environment variables
+    # Needed for API.AI and Mongo Client
 
     MONGODB_ACCESS = "DB_ACCESS"
     APICLIENT_ACCESS_TOKEN = "CLIENT_ACCESS_TOKEN"
     LANGUAGE = "en"
+    DB_NAME = 'heroku_swknz2mg'
+    TABLE_NAME = 'userinfo'
 
     def __init__(self):
         self.session = self.create_sessionid()
         self.apicat = self.get_envariable(ConnectionEstablisher.APICLIENT_ACCESS_TOKEN)
         self.mongoaccess = self.get_envariable(ConnectionEstablisher.MONGODB_ACCESS)
         self.apisecure = ApiConnector(self.session, self.LANGUAGE, self.apicat)
+        self.mongoclient = MongoConnector(self.mongoaccess)
 
     # A function for creating a unique session id when establishing
     # a connection with API.ai server
     def create_sessionid(self):
         return str(uuid.uuid4())[:36]
 
-
-    # Gets the anvironment variable from the local OS
+    # Gets the environment variable from the local OS
     def get_envariable(self, vname):
         return os.getenv(vname)
 
@@ -40,5 +45,22 @@ class ConnectionEstablisher(object):
         response = self.apisecure.send_textquery(text).read()
         response_json = json.loads(response.decode('utf-8'))
         return response_json
+
+    def dbrecord_exists(self, **kwargs):
+        if self.mongoclient.record_exists(ConnectionEstablisher.DB_NAME, ConnectionEstablisher.TABLE_NAME, **kwargs):
+            return True
+        else:
+            return False
+
+    def dbrecord_insert(self, **kwargs):
+            self.mongoclient.insert(ConnectionEstablisher.DB_NAME, ConnectionEstablisher.TABLE_NAME, **kwargs)
+
+    def dbrecord_update(self, user_id, **kwargs):
+            self.mongoclient.update(ConnectionEstablisher.DB_NAME, ConnectionEstablisher.TABLE_NAME, user_id, **kwargs)
+
+
+
+
+
 
 
