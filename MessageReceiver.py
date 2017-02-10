@@ -2,7 +2,8 @@
 
 from ConnectionEstablisher import ConnectionEstablisher
 
+
 class MessageReceiver(object):
 
-
     def __init__(self):
+        pass
