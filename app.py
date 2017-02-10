@@ -51,7 +51,8 @@ def webhook():
                     send_message(sender_id, send_text)
 
                     # Inserting the user into the db
-                    log(connection.dbrecord_insert(user_id=sender_id))
+                    if connection.dbrecord_exists(user_id = sender_id) is False:
+                        log(connection.dbrecord_insert(user_id=sender_id))
                   
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
