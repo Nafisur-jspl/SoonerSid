@@ -28,7 +28,7 @@ class ChatHandler(object):
         return response_json['result']['fulfillment']['speech']
 
     def receive_message(self, data):
-        log(data)
+        self.log(data)
         if data["object"] == "page":
             for entry in data["entry"]:
                 for messaging_event in entry["messaging"]:
@@ -72,5 +72,5 @@ class ChatHandler(object):
             self.log(r.status_code)
             self.log(r.text)
 
-    def log(message):  # simple wrapper for logging to stdout on
+    def log(self,message):  # simple wrapper for logging to stdout on
         sys.stdout.flush()
