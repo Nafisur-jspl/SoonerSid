@@ -1,6 +1,6 @@
 # A Class that can establish a connection with ApiConnector
 # and MongoConnector and fetches the existing environment variables
-# and sets them yp for connection
+# and sets them up for connection
 
 import json
 import os
@@ -29,7 +29,7 @@ class ConnectionEstablisher(object):
         self.mongoclient = MongoConnector(self.mongoaccess)
 
     # A function for creating a unique session id when establishing
-    # a connection with API.ai server
+    # a connection with API.ai server, 36 is the limit for a api.ai server
     def create_sessionid(self):
         return str(uuid.uuid4())[:36]
 
@@ -45,6 +45,8 @@ class ConnectionEstablisher(object):
         response = self.apisecure.send_textquery(text).read()
         response_json = json.loads(response.decode('utf-8'))
         return response_json
+
+    #db functions like checking for a records, insert, delete that calls MongoConnectors functions
 
     def dbrecord_exists(self, **kwargs):
         if self.mongoclient.record_exists(ConnectionEstablisher.DB_NAME, ConnectionEstablisher.TABLE_NAME, **kwargs):

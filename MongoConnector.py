@@ -8,11 +8,13 @@ from UserDefinedExceptions.ElementDoesntExist import ElementDoesntExist
 DB_NAME = 'heroku_swknz2mg'
 TABLE_NAME = 'userinfo'
 
+
 class MongoConnector(object):
 
     def __init__(self, db_access):
         self.db_client = MongoClient(db_access)
 
+    # kwargs is of the type dict thus makes it easy to perform db operations which requires dict Data structure
     def record_exists(self, DB, TABLE, **kwargs):
 
         # How to combine strings to make a function call ?.
@@ -37,7 +39,6 @@ class MongoConnector(object):
                 print(err)
 
     # Update is sufficient and findAndModify not considered because of a single thread access
-    # Git integration working ?
     def update(self, DB, TABLE, user_id, **kwargs):
         if self.record_exists(DB, TABLE, **kwargs) is None:
             raise ElementDoesntExist("Element not present in the db")
