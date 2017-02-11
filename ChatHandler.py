@@ -6,6 +6,7 @@ import sys
 from ConnectionEstablisher import ConnectionEstablisher
 import json
 import os
+import requests
 
 
 class ChatHandler(object):
@@ -27,6 +28,7 @@ class ChatHandler(object):
         return response_json['result']['fulfillment']['speech']
 
     def receive_message(self, data):
+        log(data)
         if data["object"] == "page":
             for entry in data["entry"]:
                 for messaging_event in entry["messaging"]:
