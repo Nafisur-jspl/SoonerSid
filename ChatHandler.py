@@ -70,5 +70,5 @@ class ChatHandler(object):
             self.log(r.status_code)
             self.log(r.text)
 
-    def log(message):  # simple wrapper for logging to stdout on heroku
+    def log(message):  # simple wrapper for logging to stdout on
         sys.stdout.flush()
