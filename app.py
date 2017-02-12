@@ -5,9 +5,11 @@ import pymongo
 import requests
 from flask import Flask, request
 from ConnectionEstablisher import ConnectionEstablisher
+from ChatHandler import ChatHandler
 
 app = Flask(__name__)
 connection = ConnectionEstablisher()
+chatter = ChatHandler()
 
 
 @app.route('/', methods=['GET'])
