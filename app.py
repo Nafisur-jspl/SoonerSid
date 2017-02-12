@@ -11,7 +11,6 @@ app = Flask(__name__)
 connection = ConnectionEstablisher()
 chatter = ChatHandler()
 
-
 @app.route('/', methods=['GET'])
 def verify():
     # when the endpoint is registered as a webhook, it must echo back
@@ -26,36 +25,15 @@ def verify():
 
 @app.route('/', methods=['POST'])
 def webhook():
-    # endpoint for processing incoming messaging events
-
     data = request.get_json()
-    log(request)  # logging request to see how facebook send back the request
-    log(data)  # you may not want to log every incoming message in production, but it's good for testing
-
     if data["object"] == "page":
-
         for entry in data["entry"]:
             for messaging_event in entry["messaging"]:
-
                 if messaging_event.get("message"):  # someone sent us a message
-
                     sender_id = messaging_event["sender"]["id"]  # the facebook ID of the person sending you the message
-                    recipient_id = messaging_event["recipient"][
-                        "id"]  # the recipient's ID, which should be your page's facebook ID
+                    recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
-
-                    # Sending the message to API.AI logging and sending it back
-                    response_json = connection.api_connect(message_text)
-                    log(response_json)
-                    send_text = response_json['result']['fulfillment']['speech']
-                    log(send_text)
-                    send_message(sender_id, "got it, thanks!")  # To make sure the application is running
-                    send_message(sender_id, send_text)
-
-                    # Inserting the user into the db after check
-                    # Adding a Comment to check git integration
-                    if connection.dbrecord_exists(user_id=sender_id) is False:
-                        log(connection.dbrecord_insert(user_id=sender_id))
+                    chatter.decision_maker(requests, message_text, sender_id)
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -98,3 +76,4 @@ def log(message):  # simple wrapper for logging to stdout on heroku
 
 if __name__ == '__main__':
     app.run(debug=True)
+

@@ -16,12 +16,12 @@ class ChatHandler(object):
 
     # Reads the message, handles what to do with the message
 
-    def decision_maker(self, requests, data):
-        user_id, text = self.receive_message(data)
+    def decision_maker(self, requests, text, user_id):
         apiai_response = self.call_apiai(text)
         self.send_message(user_id, apiai_response, requests)
         if self.connection.dbrecord_exists(user_id=user_id) is False:
             self.connection.dbrecord_insert(user_id=user_id)
+            self.send_message(user_id, "Existing user", requests)
 
     def call_apiai(self, text):
         response_json = self.connection.api_connect(text)
