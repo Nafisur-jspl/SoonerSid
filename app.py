@@ -43,7 +43,7 @@ def webhook():
                     message_text = messaging_event["message"]["text"]  # the message's text
 
                     # Sending the message to API.AI logging and sending it back
-                    response_json = chatter.call_apiai(message_text)
+                    response_json = connection.api_connect(message_text)
                     send_text = response_json['result']['fulfillment']['speech']
                     send_message(sender_id, "got it, thanks!")  # To make sure the application is running
                     send_message(sender_id, send_text)
