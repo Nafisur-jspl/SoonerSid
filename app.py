@@ -1,7 +1,6 @@
 import os
 import sys
 import json
-import pymongo
 import requests
 from flask import Flask, request
 from ConnectionEstablisher import ConnectionEstablisher
@@ -40,12 +39,11 @@ def webhook():
                 if messaging_event.get("message"):  # someone sent us a message
 
                     sender_id = messaging_event["sender"]["id"]  # the facebook ID of the person sending you the message
-                    recipient_id = messaging_event["recipient"][
-                        "id"]  # the recipient's ID, which should be your page's facebook ID
+                    recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
 
                     # Sending the message to API.AI logging and sending it back
-                    response_json = connection.api_connect(message_text)
+                    response_json = chatter.call_apiai(message_text)
                     send_text = response_json['result']['fulfillment']['speech']
                     send_message(sender_id, "got it, thanks!")  # To make sure the application is running
                     send_message(sender_id, send_text)
