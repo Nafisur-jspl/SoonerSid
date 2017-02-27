@@ -4,6 +4,7 @@
 
 from ConnectionEstablisher import ConnectionEstablisher
 
+
 class ChatHandler(object):
 
     def __init__(self):
@@ -21,4 +22,5 @@ class ChatHandler(object):
     def call_apiai(self, text):
         response_json = self.connection.api_connect(text)
         return response_json['result']['fulfillment']['speech']
+
 

@@ -39,10 +39,13 @@ def webhook():
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
 
-                    # Sending the message to API.AI logging and sending it back
+                    # Sending the message to API.AI , db checks are done and the decision maker
+                    # returns back the appropriate return
+
                     send_text = chatter.decision_maker(message_text, sender_id)
                     send_message(sender_id, "got it, thanks!")  # To make sure the application is running
                     send_message(sender_id, send_text)
+                    quick_replies(sender_id, "Pick a color")
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -77,9 +80,44 @@ def send_message(recipient_id, message_text):
         log(r.text)
 
 
+def quick_replies(recipient_id, message_text, options):
+    params = {
+        "access_token": os.environ["PAGE_ACCESS_TOKEN"]
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+    data = json.dumps({
+        "recipient": {
+            "id": recipient_id
+        },
+        "message": {
+            "text": message_text,
+            "quick_replies": [
+                {
+                    "content_type": "text",
+                    "title": "Red",
+                    "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED",
+                    "image_url": "http://petersfantastichats.com/img/red.png"
+                },
+                {
+                    "content_type": "text",
+                    "title": "Green",
+                    "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN",
+                    "image_url": "http://petersfantastichats.com/img/green.png"
+                }
+    ]
+        }
+    })
+    r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
+    if r.status_code != 200:
+        log(r.status_code)
+        log(r.text)
+
 def log(message):  # simple wrapper for logging to stdout on heroku
     sys.stdout.flush()
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+

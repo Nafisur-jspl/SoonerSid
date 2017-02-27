@@ -2,4 +2,6 @@
 config.py.example
 .idea
 getapi*
+EventScrapper.py
+WebScrapper*
 
