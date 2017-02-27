@@ -80,7 +80,7 @@ def send_message(recipient_id, message_text):
         log(r.text)
 
 
-def quick_replies(recipient_id, message_text, options):
+def quick_replies(recipient_id, message_text):
     params = {
         "access_token": os.environ["PAGE_ACCESS_TOKEN"]
     }
