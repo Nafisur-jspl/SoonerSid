@@ -44,7 +44,7 @@ def webhook():
 
                     #send_text = chatter.decision_maker(message_text, sender_id)
                     send_message(sender_id, "got it, thanks!")  # To make sure the application is running
-                    send_message(sender_id, connection.api_connect(message_text))
+                    send_message(sender_id, textReply(message_text))
                     if not connection.dbrecord_exists(user_id=sender_id):
                         getUserInfo(sender_id)
 
@@ -66,6 +66,9 @@ def getUserInfo(sender_id):
     connection.dbrecord_insert(user_id=sender_id)
 
 
+def textReply(self, text):
+    response_json = self.connection.api_connect(text)
+    return response_json['result']['fulfillment']['speech']
 
 
 def send_message(recipient_id, message_text):
