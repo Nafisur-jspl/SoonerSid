@@ -66,8 +66,8 @@ def getUserInfo(sender_id):
     connection.dbrecord_insert(user_id=sender_id)
 
 
-def textReply(self, text):
-    response_json = self.connection.api_connect(text)
+def textReply(text):
+    response_json = connection.api_connect(text)
     return response_json['result']['fulfillment']['speech']
 
 
