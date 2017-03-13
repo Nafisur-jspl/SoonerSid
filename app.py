@@ -45,7 +45,7 @@ def webhook():
                     #send_text = chatter.decision_maker(message_text, sender_id)
                     send_message(sender_id, "got it, thanks!")  # To make sure the application is running
                     send_message(sender_id, connection.api_connect(message_text))
-                    if not connection.dbrecord_exists(sender_id):
+                    if not connection.dbrecord_exists(user_id=sender_id):
                         getUserInfo(sender_id)
 
                     # quick_replies(sender_id, "Pick a color") # Checking quick replies
