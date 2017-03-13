@@ -63,7 +63,7 @@ def webhook():
 
 
 def getUserInfo(sender_id):
-    connection.dbrecord_insert(sender_id)
+    connection.dbrecord_insert(user_id=sender_id)
 
 
 
