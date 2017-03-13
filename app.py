@@ -5,6 +5,7 @@ import requests
 from flask import Flask, request
 from ConnectionEstablisher import ConnectionEstablisher
 from ChatHandler import ChatHandler
+import ast
 
 app = Flask(__name__)
 connection = ConnectionEstablisher()
@@ -64,6 +65,7 @@ def webhook():
 
 def getUserInfo(sender_id):
     connection.dbrecord_insert(user_id=sender_id)
+    quick_replies(sender_id, designation, option_header='Select Your Designation')
 
 
 def textReply(text):
@@ -91,36 +93,49 @@ def send_message(recipient_id, message_text):
         log(r.status_code)
         log(r.text)
 
+designation = { "undergraduate": "DEVELOPER_DEFINED_PAYLOAD_FOR_UNDERGRADUATE",
+              "graduate": "DEVELOPER_DEFINED_PAYLOAD_FOR_GRADUATE",
+              "PHD": "DEVELOPER_DEFINED_PAYLOAD_FOR_PHD",
+              "Professor": "DEVELOPER_DEFINED_PAYLOAD_FOR_PROFESSOR"
+              }
 
-def quick_replies(recipient_id, message_text):
+def getquickContent(dummy, option_header, sender_id):
+    quickContent = []
+    for key, value in dummy.items():
+        quickContent.append('{"content_type": "text", "title":"' + key +'", "payload":"' + value + '"}')
+    return '{ "recipient": { "id" :' + sender_id + '},' + '"message": { "text": "'+ option_header +'", "quick_replies": [' + (','.join(quickContent)) + ']}}'
+
+def quick_replies(recipient_id, designation, option_header):
     params = {
         "access_token": os.environ["PAGE_ACCESS_TOKEN"]
     }
     headers = {
         "Content-Type": "application/json"
     }
-    data = json.dumps({
-        "recipient": {
-            "id": recipient_id
-        },
-        "message": {
-            "text": message_text,
-            "quick_replies": [
-                {
-                    "content_type": "text",
-                    "title": "Red",
-                    "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED"
 
-                },
-                {
-                    "content_type": "text",
-                    "title": "Green",
-                    "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN"
-
-                }
-    ]
-        }
-    })
+    data = json.dumps(ast.literal_eval(getquickContent(designation, option_header, recipient_id)))
+    # data = json.dumps({
+    #     "recipient": {
+    #         "id": recipient_id
+    #     },
+    #     "message": {
+    #         "text": message_text,
+    #         "quick_replies": [
+    #             {
+    #                 "content_type": "text",
+    #                 "title": "Red",
+    #                 "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED"
+    #
+    #             },
+    #             {
+    #                 "content_type": "text",
+    #                 "title": "Green",
+    #                 "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN"
+    #
+    #             }
+    # ]
+    #     }
+    # })
     r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
     if r.status_code != 200:
         log(r.status_code)
