@@ -42,10 +42,13 @@ def webhook():
                     # Sending the message to API.AI , db checks are done and the decision maker
                     # returns back the appropriate return
 
-                    send_text = chatter.decision_maker(message_text, sender_id)
+                    #send_text = chatter.decision_maker(message_text, sender_id)
                     send_message(sender_id, "got it, thanks!")  # To make sure the application is running
-                    send_message(sender_id, send_text)
-                    quick_replies(sender_id, "Pick a color")
+                    send_message(sender_id, connection.api_connect(message_text))
+                    if not connection.dbrecord_exists(sender_id):
+                        getUserInfo(sender_id)
+
+                    # quick_replies(sender_id, "Pick a color") # Checking quick replies
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -57,6 +60,12 @@ def webhook():
                     pass
 
     return "ok", 200
+
+
+def getUserInfo(sender_id):
+    connection.dbrecord_insert(sender_id)
+
+
 
 
 def send_message(recipient_id, message_text):
