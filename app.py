@@ -73,7 +73,7 @@ def webhook():
 
 
 def getUserInfo(sender_id):
-    connection.dbrecord_insert(user_id=sender_id)
+    connection.dbrecord_insert(user_id=sender_id, designation='NONE')
     quick_replies(sender_id, designation, option_header='Select Your Designation')
     userInfo = True
 

@@ -43,7 +43,8 @@ class MongoConnector(object):
         if self.record_exists(DB, TABLE, **kwargs) is None:
             raise ElementDoesntExist("Element not present in the db")
         else:
-            self.db_client.heroku_swknz2mg.userinfo.update_one({"user_id": user_id}, {'$set': kwargs})
+            self.db_client.heroku_swknz2mg.userinfo.update_one({"user_id": user_id}, {"$set": kwargs})
+            print ("Element Updated")
 
 
 
