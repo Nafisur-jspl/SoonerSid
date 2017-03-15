@@ -11,6 +11,13 @@ app = Flask(__name__)
 connection = ConnectionEstablisher()
 chatter = ChatHandler()
 
+userInfo = False
+
+designation = { "undergraduate": "DEVELOPER_DEFINED_PAYLOAD_FOR_UNDERGRADUATE",
+              "graduate": "DEVELOPER_DEFINED_PAYLOAD_FOR_GRADUATE",
+              "PHD": "DEVELOPER_DEFINED_PAYLOAD_FOR_PHD",
+              "Professor": "DEVELOPER_DEFINED_PAYLOAD_FOR_PROFESSOR"
+              }
 
 @app.route('/', methods=['GET'])
 def verify():
@@ -43,9 +50,11 @@ def webhook():
                     # Sending the message to API.AI , db checks are done and the decision maker
                     # returns back the appropriate return
 
-                    #send_text = chatter.decision_maker(message_text, sender_id)
-                    send_message(sender_id, "got it, thanks!")  # To make sure the application is running
-                    send_message(sender_id, textReply(message_text))
+                    if userInfo and message_text in designation.keys():
+                        connection.dbrecord_update(user_id=sender_id, designation=message_text)
+                    else:
+                        send_message(sender_id, "got it, thanks!")  # To make sure the application is running
+                        send_message(sender_id, textReply(message_text))
                     if not connection.dbrecord_exists(user_id=sender_id):
                         getUserInfo(sender_id)
 
@@ -66,6 +75,7 @@ def webhook():
 def getUserInfo(sender_id):
     connection.dbrecord_insert(user_id=sender_id)
     quick_replies(sender_id, designation, option_header='Select Your Designation')
+    userInfo = True
 
 
 def textReply(text):
@@ -92,12 +102,6 @@ def send_message(recipient_id, message_text):
     if r.status_code != 200:
         log(r.status_code)
         log(r.text)
-
-designation = { "undergraduate": "DEVELOPER_DEFINED_PAYLOAD_FOR_UNDERGRADUATE",
-              "graduate": "DEVELOPER_DEFINED_PAYLOAD_FOR_GRADUATE",
-              "PHD": "DEVELOPER_DEFINED_PAYLOAD_FOR_PHD",
-              "Professor": "DEVELOPER_DEFINED_PAYLOAD_FOR_PROFESSOR"
-              }
 
 # composes data for a quick reply. Gets the options and the payload as dictionary
 # along with option header and recipient ID
