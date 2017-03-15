@@ -13,6 +13,7 @@ chatter = ChatHandler()
 
 userInfo = False
 
+
 designation = { "undergraduate": "DEVELOPER_DEFINED_PAYLOAD_FOR_UNDERGRADUATE",
               "graduate": "DEVELOPER_DEFINED_PAYLOAD_FOR_GRADUATE",
               "PHD": "DEVELOPER_DEFINED_PAYLOAD_FOR_PHD",
@@ -23,6 +24,7 @@ designation = { "undergraduate": "DEVELOPER_DEFINED_PAYLOAD_FOR_UNDERGRADUATE",
 def verify():
     # when the endpoint is registered as a webhook, it must echo back
     # the 'hub.challenge' value it receives in the query arguments
+    print("Starting")
     if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
         if not request.args.get("hub.verify_token") == os.environ["VERIFY_TOKEN"]:
             return "Verification token mismatch", 403
@@ -34,6 +36,7 @@ def verify():
 @app.route('/', methods=['POST'])
 def webhook():
     # endpoint for processing incoming messaging events
+    print("Recieving")
     data = request.get_json()
     print(data)
     log(data)
@@ -52,7 +55,7 @@ def webhook():
                     # returns back the appropriate return
 
                     if userInfo and message_text in designation.keys():
-                        connection.dbrecord_update(user_id=sender_id, designation=message_text)
+                        connection.dbrecord_update(user_id=str(sender_id), designation=message_text)
                     else:
                         send_message(sender_id, "got it, thanks!")  # To make sure the application is running
                         send_message(sender_id, textReply(message_text))
@@ -74,6 +77,7 @@ def webhook():
 
 
 def getUserInfo(sender_id):
+    global userInfo
     connection.dbrecord_insert(user_id=sender_id, designation='NONE')
     quick_replies(sender_id, designation, option_header='Select Your Designation')
     userInfo = True

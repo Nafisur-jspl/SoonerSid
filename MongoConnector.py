@@ -24,8 +24,10 @@ class MongoConnector(object):
         # function_call = getattr(collection.Collection, 'find_one',kwargs)()
 
         if (self.db_client.heroku_swknz2mg.userinfo.find_one(kwargs)) is None:
+            print("Element doesnt exists")
             return False
         else:
+            print("Element Exists")
             return True
 
     def insert(self, DB, TABLE, **kwargs):
