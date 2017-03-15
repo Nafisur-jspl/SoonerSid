@@ -35,7 +35,8 @@ def verify():
 def webhook():
     # endpoint for processing incoming messaging events
     data = request.get_json()
-
+    print(data)
+    log(data)
     if data["object"] == "page":
 
         for entry in data["entry"]:
