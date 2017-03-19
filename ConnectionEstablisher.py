@@ -41,24 +41,24 @@ class ConnectionEstablisher(object):
     # Gets back the http response object and converts them into json and
     # returns it back
     def api_connect(self, text):
-        self.apisecure = ApiConnector(self.session, self.LANGUAGE, self.apicat)
+        self.apisecure = ApiConnector(session_id=self.session, lang=self.LANGUAGE, cat=self.apicat) # cat - Client Access Token
         response = self.apisecure.send_textquery(text).read()
         response_json = json.loads(response.decode('utf-8'))
         return response_json
 
-    #db functions like checking for a records, insert, delete that calls MongoConnectors functions
+    # db functions like checking for a record, insert, delete that calls MongoConnectors functions
 
-    def dbrecord_exists(self, **kwargs):
-        if self.mongoclient.record_exists(ConnectionEstablisher.DB_NAME, ConnectionEstablisher.TABLE_NAME, **kwargs):
+    def dbrecord_exists(self, **fields):
+        if self.mongoclient.record_exists(DB=ConnectionEstablisher.DB_NAME, TABLE=ConnectionEstablisher.TABLE_NAME, **fields):
             return True
         else:
             return False
 
-    def dbrecord_insert(self, **kwargs):
-            self.mongoclient.insert(ConnectionEstablisher.DB_NAME, ConnectionEstablisher.TABLE_NAME, **kwargs)
+    def dbrecord_insert(self, **fields):
+            self.mongoclient.insert(ConnectionEstablisher.DB_NAME, ConnectionEstablisher.TABLE_NAME, **fields)
 
-    def dbrecord_update(self, user_id, **kwargs):
-            self.mongoclient.update(ConnectionEstablisher.DB_NAME, ConnectionEstablisher.TABLE_NAME, user_id, **kwargs)
+    def dbrecord_update(self, user_id, **fields):
+            self.mongoclient.update(DB=ConnectionEstablisher.DB_NAME, TABLE=ConnectionEstablisher.TABLE_NAME, user_id=user_id, **fields)
 
 
 

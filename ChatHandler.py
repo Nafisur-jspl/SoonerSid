@@ -14,13 +14,13 @@ class ChatHandler(object):
     # Responds back what to send back
 
     def decision_maker(self, text, user_id):
-        apiai_response = self.call_apiai(text)
+        apiai_response = self.call_apiai(text=text)
         if self.connection.dbrecord_exists(user_id=user_id) is False:
             self.connection.dbrecord_insert(user_id=user_id)
         return apiai_response
 
     def call_apiai(self, text):
-        response_json = self.connection.api_connect(text)
+        response_json = self.connection.api_connect(text=text)
         return response_json['result']['fulfillment']['speech']
 
 

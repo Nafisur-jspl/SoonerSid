@@ -11,14 +11,14 @@ app = Flask(__name__)
 connection = ConnectionEstablisher()
 chatter = ChatHandler()
 
-userInfo = False
-
-
-designation = { "undergraduate": "DEVELOPER_DEFINED_PAYLOAD_FOR_UNDERGRADUATE",
-              "graduate": "DEVELOPER_DEFINED_PAYLOAD_FOR_GRADUATE",
-              "PHD": "DEVELOPER_DEFINED_PAYLOAD_FOR_PHD",
-              "Professor": "DEVELOPER_DEFINED_PAYLOAD_FOR_PROFESSOR"
+user_info = False
+designation = {
+                "undergraduate": "DEVELOPER_DEFINED_PAYLOAD_FOR_UNDERGRADUATE",
+                "graduate": "DEVELOPER_DEFINED_PAYLOAD_FOR_GRADUATE",
+                "PHD": "DEVELOPER_DEFINED_PAYLOAD_FOR_PHD",
+                "Professor": "DEVELOPER_DEFINED_PAYLOAD_FOR_PROFESSOR"
               }
+
 
 @app.route('/', methods=['GET'])
 def verify():
@@ -54,13 +54,12 @@ def webhook():
                     # Sending the message to API.AI , db checks are done and the decision maker
                     # returns back the appropriate return
 
-                    if userInfo and message_text in designation.keys():
+                    if user_info and message_text in designation.keys():
                         connection.dbrecord_update(user_id=str(sender_id), designation=message_text)
                     else:
-                        send_message(sender_id, "got it, thanks!")  # To make sure the application is running
-                        send_message(sender_id, textReply(message_text))
+                        send_message(recipient_id=sender_id, message_text=text_reply(message_text))
                     if not connection.dbrecord_exists(user_id=sender_id):
-                        getUserInfo(sender_id)
+                        get_userinfo(sender_id)
 
                     # quick_replies(sender_id, "Pick a color") # Checking quick replies
 
@@ -76,14 +75,14 @@ def webhook():
     return "ok", 200
 
 
-def getUserInfo(sender_id):
-    global userInfo
+def get_userinfo(sender_id):
+    global user_info
     connection.dbrecord_insert(user_id=sender_id, designation='NONE')
-    quick_replies(sender_id, designation, option_header='Select Your Designation')
-    userInfo = True
+    quick_replies(recipient_id=sender_id, designation=designation, option_header='Select Your Designation')
+    user_info = True
 
 
-def textReply(text):
+def text_reply(text):
     response_json = connection.api_connect(text)
     return response_json['result']['fulfillment']['speech']
 
@@ -111,11 +110,11 @@ def send_message(recipient_id, message_text):
 # composes data for a quick reply. Gets the options and the payload as dictionary
 # along with option header and recipient ID
 
-def getquickContent(dummy, option_header, sender_id):
-    quickContent = []
-    for key, value in dummy.items():
-        quickContent.append('{"content_type": "text", "title":"' + key +'", "payload":"' + value + '"}')
-    return '{ "recipient": { "id" :' + sender_id + '},' + '"message": { "text": "'+ option_header +'", "quick_replies": [' + (','.join(quickContent)) + ']}}'
+def quick_content(content_data, option_header, sender_id):
+    quick_content = []
+    for key, value in content_data.items():
+        quick_content.append('{"content_type": "text", "title":"' + key +'", "payload":"' + value + '"}')
+    return '{ "recipient": { "id" :' + sender_id + '},' + '"message": { "text": "'+ option_header +'", "quick_replies": [' + (','.join(quick_content)) + ']}}'
 
 def quick_replies(recipient_id, designation, option_header):
     params = {
@@ -125,7 +124,7 @@ def quick_replies(recipient_id, designation, option_header):
         "Content-Type": "application/json"
     }
 
-    data = json.dumps(ast.literal_eval(getquickContent(designation, option_header, recipient_id)))
+    data = json.dumps(ast.literal_eval(quick_content(content_data=designation, option_header=option_header, sender_id=recipient_id)))
     r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
 
     if r.status_code != 200:
