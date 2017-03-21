@@ -1,5 +1,6 @@
 # Mongo Connector that manages the connection made between the server
 # and the MLAB mongo service
+#Sooner
 from pymongo import MongoClient
 
 from UserDefinedExceptions.ElementAlreadyExists import ElementAlreadyExists
